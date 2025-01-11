@@ -93,6 +93,7 @@ test: test-local-no_times
 test: test-local-copy_links
 test: test-local-crazy-filename-chars
 test: test-local-crazy-pathname-chars
+test: test-local-custom-rsync-binary
 test: test-remote-default-abs
 test: test-remote-default-rel
 test: test-remote-ssh_1111_port-nouser
@@ -144,6 +145,9 @@ test-local-crazy-filename-chars:
 
 test-local-crazy-pathname-chars:
 	./tests/06-run-local-crazy-pathname-chars.sh
+
+test-local-custom-rsync-binary:
+	./tests/07-run-local-custom-rsync-binary.sh
 
 test-remote-default-abs:
 	./tests/10-run-remote-default-abs.sh

@@ -22,6 +22,7 @@ PORT=
 KEY=
 
 # Default variables
+RSYNC_COMMAND="${RSYNC_COMMAND:=rsync}"
 SSH_ARGS="-oStrictHostKeyChecking=no -oLogLevel=QUIET -q"
 
 
@@ -379,9 +380,12 @@ if ! dir_exists "${2}"; then
 	exit 1
 fi
 
-if ! command -v rsync >/dev/null 2>&1; then
-	logerr "rsync binary not found but required."
+if ! command -v "$RSYNC_COMMAND" >/dev/null 2>&1; then
+	logerr "rsync binary '$RSYNC_COMMAND' not found but required."
 	exit 1
+fi
+if [ "$RSYNC_COMMAND" != "rsync" ]; then
+  RSYNC_COMMAND="$(escape_path "$RSYNC_COMMAND")"
 fi
 
 
@@ -427,9 +431,9 @@ if link_exists "${DEST}/${BACKUP_LATEST}"; then
 	BTYPE="incremental"
 
 	logmsg "Starting incremental backup"
-	logmsg "\$ rsync $* $( escape_path "${SRC}" ) $( escape_path "${DEST}/${BACKUP_INPROGRESS}" )"
+	logmsg "\$ $RSYNC_COMMAND $* $( escape_path "${SRC}" ) $( escape_path "${DEST}/${BACKUP_INPROGRESS}" )"
 
-	cmd="rsync \
+	cmd="$RSYNC_COMMAND \
 		-e \"ssh ${SSH_ARGS}\" \
 		--recursive \
 		--perms \
@@ -447,9 +451,9 @@ else
 	BTYPE="full"
 
 	logmsg "Starting full backup"
-	logmsg "\$ rsync $* $( escape_path "${SRC}" ) $( escape_path "${DEST}/${BACKUP_INPROGRESS}" )"
+	logmsg "\$ $RSYNC_COMMAND $* $( escape_path "${SRC}" ) $( escape_path "${DEST}/${BACKUP_INPROGRESS}" )"
 
-	cmd="rsync \
+	cmd="$RSYNC_COMMAND \
 		-e \"ssh ${SSH_ARGS}\" \
 		--recursive \
 		--perms \
